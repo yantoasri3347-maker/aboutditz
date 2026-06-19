@@ -1,14 +1,38 @@
 // ================= INTERAKSI LOADING SCREEN =================
 window.addEventListener('load', function() {
     const preloader = document.getElementById('preloader');
-    
-    // Memberikan delay kecil (800ms) agar efek loading kerennya terlihat dulu
     setTimeout(() => {
         if (preloader) {
             preloader.classList.add('fade-out');
         }
     }, 800);
 });
+
+// ================= FITUR DOWNLOAD/SIMPAN QRIS (BLOB SYSTEM) =================
+function triggerDownload() {
+    // Ambil elemen gambar QRIS asli
+    const qrisImageElement = document.getElementById('qrisSourceImage');
+    const imageURL = qrisImageElement.src;
+    
+    // Proses download menggunakan Fetch & Blob agar kompatibel di Mobile & Web
+    fetch(imageURL)
+        .then(response => response.blob())
+        .then(blob => {
+            const blobURL = URL.createObjectURL(blob);
+            const downloadLink = document.createElement('a');
+            downloadLink.href = blobURL;
+            downloadLink.download = 'QRIS_DitzOfficial.png'; // Nama file saat disimpan
+            document.body.appendChild(downloadLink);
+            downloadLink.click();
+            document.body.removeChild(downloadLink);
+            URL.revokeObjectURL(blobURL);
+        })
+        .catch(error => {
+            console.error('Gagal mendownload gambar QRIS:', error);
+            // Fallback jika terjadi kendala CORS jaringan eksternal
+            window.open(imageURL, '_blank');
+        });
+}
 
 // ================= FITUR SALIN NOMOR (COPY TO CLIPBOARD) =================
 function copyNumber(text, buttonElement) {
